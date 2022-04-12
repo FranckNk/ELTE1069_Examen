@@ -19,15 +19,19 @@ VERSION        : 0.0.1
 // Declaration des classes.
 Servo ServoMoteur;  // Création d'un objet de type Servo (un servo moteur).
 Timer Temp;
+Timer TempBlink;
 
 
 // Déclaration des constantes.
 const int PIN_SERVO_MOTEUR = 2;
+const int LED_PIN = 4;
 
+bool LedState = false;
+bool Blink = false;
 char ValueGot; // Value got by I2C protocol.
-unsigned short int TimeDelay    = 2000; // Wait time for serial monitor.
+unsigned short int TimeDelay    = 500; // Wait time for blink LED.
 unsigned short int DelayAttente = 15; // Waiting time for set angle of servo.
-unsigned short int AngleServo = 90; // Valeur par défaut de l'angle du servo moteur.
+unsigned short int AngleServo = 0; // Valeur par défaut de l'angle du servo moteur.
 
 void ReceiveEvent(int byte);
 
@@ -38,23 +42,37 @@ void setup() {
   Wire.onReceive(ReceiveEvent);
 	// Configuration du mode des broches.
 	ServoMoteur.attach(PIN_SERVO_MOTEUR);
-  ServoMoteur.write(ValueGot);              // Reset la valeur de l'angle du servo.
+  ServoMoteur.write(AngleServo);              // Reset la valeur de l'angle du servo.
 
 	Temp.startTimer(2000); // Time to reset Servo.
+
 }
 
 void loop() {
-	if (Temp.isTimerReady())
-	{
-    ServoMoteur.write(AngleServo);              
-		Temp.startTimer(DelayAttente);		
+    // Modification de l'angle du servo moteur.
+    ServoMoteur.write(AngleServo);     
+   // Vérification de l'état de blink.
+    if (AngleServo <= 0){
+      Blink = false;
+    }
+    else {
+      Blink = true;
+    }
+	if (Temp.isTimerReady() && Blink)
+	{         
+    digitalWrite(LED_PIN, LedState);   
+    LedState = !LedState;
+		Temp.startTimer(TimeDelay);		
 	}
+
 }
 void ReceiveEvent(int byte){
   	ValueGot = Wire.read();    // read one character from the I2C
 
 		Serial.print("\nMKR1000\nLa valeur obtenue est : ");
 		Serial.println(ValueGot);
+    Serial.print("AngleServo : ");
+		Serial.println(AngleServo);
     switch (ValueGot)
     {
     case 'A':
