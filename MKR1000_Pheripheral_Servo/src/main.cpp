@@ -83,11 +83,6 @@ void loop() {
 }
 void ReceiveEvent(int byte){
 	ValueGot = Wire.read();    // read one character from the I2C
-
-	Serial.print("\nMKR1000\nLa valeur obtenue est : ");
-	Serial.println(ValueGot);
-	Serial.print("AngleServo : ");
-	Serial.println(AngleServo);
 	SendData = true;
 	switch (ValueGot)
 	{
