@@ -27,6 +27,7 @@ const int PIN_SERVO_MOTEUR = 2;
 char ValueGot; // Value got by I2C protocol.
 unsigned short int TimeDelay    = 2000; // Wait time for serial monitor.
 unsigned short int DelayAttente = 15; // Waiting time for set angle of servo.
+unsigned short int AngleServo = 90; // Valeur par défaut de l'angle du servo moteur.
 
 void ReceiveEvent(int byte);
 
@@ -37,13 +38,16 @@ void setup() {
   Wire.onReceive(ReceiveEvent);
 	// Configuration du mode des broches.
 	ServoMoteur.attach(PIN_SERVO_MOTEUR);
+  ServoMoteur.write(ValueGot);              // Reset la valeur de l'angle du servo.
+
 	Temp.startTimer(2000); // Time to reset Servo.
 }
 
 void loop() {
 	if (Temp.isTimerReady())
 	{
-		Temp.startTimer(TimeDelay);		
+    ServoMoteur.write(AngleServo);              
+		Temp.startTimer(DelayAttente);		
 	}
 }
 void ReceiveEvent(int byte){
@@ -51,4 +55,28 @@ void ReceiveEvent(int byte){
 
 		Serial.print("\nMKR1000\nLa valeur obtenue est : ");
 		Serial.println(ValueGot);
+    switch (ValueGot)
+    {
+    case 'A':
+      AngleServo = 180;
+      break;
+    case 'B':
+        if (AngleServo >= 180)
+          AngleServo = 180;
+        else
+          AngleServo = AngleServo + 1;
+      break;
+    case 'C':
+      if (AngleServo <= 0)
+          AngleServo = 0;
+        else
+          AngleServo = AngleServo - 1;
+      break;
+    case 'D':
+      AngleServo = 0;
+      break;
+    
+    default:
+      break;
+    }
 }
