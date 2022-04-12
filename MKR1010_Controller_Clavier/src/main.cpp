@@ -1,6 +1,6 @@
 /*
 
-TITRE          : ELTE1069 Examen 
+TITRE          : ELTE1069 Examen - Clavier Matriciel.
 AUTEUR         : Franck Nkeubou Awougang
 DATE           : 12/04/2022
 DESCRIPTION    : Controle d'une grue à l'aide d'un clavier matriciel sur un MKR1010 qui communique via I2C
@@ -9,6 +9,7 @@ VERSION        : 0.0.1
 
 */
 
+#include <Wire.h>
 #include <Arduino.h>
 #include <Keypad.h>
 // Configuration du clavier matriciel 4x4.
@@ -30,9 +31,10 @@ Keypad keypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
 void setup() {
   
-    Serial.begin(9600);
-  // put your setup code here, to run once:
- // keypad.addEventListener(keypadEvent); // Add an event listener for this keypad
+    Serial.begin(9600); // démarrage du moniteur série.
+    Wire.begin();       // Démarrage de la communication I2C.
+    // put your setup code here, to run once:
+    // keypad.addEventListener(keypadEvent); // Add an event listener for this keypad
 }
 
 void loop(){
@@ -40,5 +42,9 @@ void loop(){
 
     if (key) {
         Serial.println(key);
+        // Envoie de la touche pressée via I2C à l'adresse 5.
+        Wire.beginTransmission(5);
+        Wire.write(key);
+        Wire.endTransmission();
     }
 }
