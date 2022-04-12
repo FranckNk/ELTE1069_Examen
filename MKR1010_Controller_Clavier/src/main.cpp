@@ -1,4 +1,13 @@
+/*
 
+TITRE          : ELTE1069 Examen 
+AUTEUR         : Franck Nkeubou Awougang
+DATE           : 12/04/2022
+DESCRIPTION    : Controle d'une grue à l'aide d'un clavier matriciel sur un MKR1010 qui communique via I2C
+                    à un MKR1000 et fait varier un servo moteur.
+VERSION        : 0.0.1
+
+*/
 
 #include <Arduino.h>
 #include <Keypad.h>
